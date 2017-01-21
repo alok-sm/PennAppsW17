@@ -89,6 +89,7 @@ class TriggerHandler(BaseHandler):
 class StartAuthHandler(tornado.web.RequestHandler):
 	@tornado.web.asynchronous
 	def get(self):
+		scope="alexa_all"
 		sd = json.dumps({
 		    "alexa:all": {
 		        "productID": Product_ID,
@@ -100,7 +101,7 @@ class StartAuthHandler(tornado.web.RequestHandler):
 		url = "https://www.amazon.com/ap/oa"
 		path = self.request.protocol + "://" + self.request.host 
 		callback = path + "/code"
-		payload = {"client_id" : Client_ID, "scope" : "alexa:all profile:user_id", "scope_data" : sd, "response_type" : "code", "redirect_uri" : callback }
+		payload = {"client_id" : Client_ID, "scope" : "alexa:all", "scope_data" : sd, "response_type" : "code", "redirect_uri" : callback }
 		req = Request('GET', url, params=payload)
 		p = req.prepare()
 		self.redirect(p.url)
@@ -183,25 +184,13 @@ class AudioHandler(BaseHandler):
 			]	
 			r = requests.post(url, headers=headers, files=files)
 			tf.close()
-
-			content_type = None
-
-			try:
-				content_type = r.headers['Content-Type']
-			except Exception as e:
-				content_type = r.headers['content-type']
-
-			boundary = None
-
 			for v in r.headers['content-type'].split(";"):
-				if re.match(r'.*boundary.*', v):
+				if re.match('.*boundary.*', v):
 					boundary =  v.split("=")[1]
 			data = r.content.split(boundary)
-			audio = None
 			for d in data:
 				if (len(d) >= 1024):
 			 	   audio = d.split('\r\n\r\n')[1].rstrip('--')
-			 	   print audio
 			self.set_header('Content-Type', 'audio/mpeg')
 			self.write(audio)
 		self.finish()
