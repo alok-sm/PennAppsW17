@@ -57,13 +57,13 @@ class QuestionHandler(BaseHandler):
 	@tornado.web.asynchronous
 	def get(self):
 		red = redis.from_url(redis_url)
-		uid = self.get_current_user()
+		uid = self.get_argument("access_token")
 		self.write({"questions": red.get(uid + "-questions")})
 		self.finish()
 
 	def post(self):
 		red = redis.from_url(redis_url)
-		uid = self.get_current_user()
+		uid = self.get_argument("access_token")
 		red.set(uid + "-questions", self.get_argument("questions"))
 		self.write({"success": True})
 		self.finish()
