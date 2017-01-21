@@ -56,6 +56,7 @@ class TriggerHandler(BaseHandler):
 	@tornado.web.asynchronous
 	def get(self):
 		red = redis.from_url(redis_url)
+		print red.get(self.get_current_user() + "-trigger")
 		self.write({"trigger": bool(red.get(self.get_current_user() + "-trigger"))})
 		red.set(self.get_current_user() + "-trigger", False)
 		self.finish()
