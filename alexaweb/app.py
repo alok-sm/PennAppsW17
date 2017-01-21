@@ -191,6 +191,7 @@ class AudioHandler(BaseHandler):
 			except Exception as e:
 				content_type = r.headers['content-type']
 				
+			boundary = None
 
 			for v in r.headers['content-type'].split(";"):
 				if re.match(r'.*boundary.*', v):
