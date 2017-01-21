@@ -186,8 +186,10 @@ class TextHandler(BaseHandler):
 			print cmd
 
 
-			tf = open(file_name)
 			os.system(cmd)
+
+			
+			tf = open(file_name)
 
 
 			url = 'https://access-alexa-na.amazon.com/v1/avs/speechrecognizer/recognize'
