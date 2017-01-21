@@ -10,6 +10,8 @@ import re
 import tempfile
 import redis
 import uuid
+import random
+import string
 from pydub import AudioSegment
 
 	
@@ -155,6 +157,72 @@ class AudioHandler(BaseHandler):
 		self.finish()
 
 
+class TextHandler(BaseHandler):
+	@tornado.web.authenticated
+	@tornado.web.asynchronous
+	def get(self):
+		text = self.get_argument("text", None, True)
+
+		uid = tornado.escape.xhtml_escape(self.current_user)
+		token = gettoken(uid)
+		if (token == False):
+			self.set_status(403)
+		else:
+			# rxfile = self.request.files['data'][0]['body']
+			# tf = tempfile.NamedTemporaryFile(suffix=".wav")
+			# tf.write(rxfile)
+			# _input = AudioSegment.from_wav(tf.name)
+			# tf.close()
+			# tf = tempfile.NamedTemporaryFile(suffix=".wav")
+			# output = _input.set_channels(1).set_frame_rate(16000)
+			# f = output.export(tf.name, format="wav")
+
+			random_str = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(20))
+			file_name = "/tmp/{}.wav".format(random_str)
+
+			os.system('os.system("espeak "hello" --stdout > {}")'.format(file_name))
+
+
+			url = 'https://access-alexa-na.amazon.com/v1/avs/speechrecognizer/recognize'
+			headers = {'Authorization' : 'Bearer %s' % token}
+			d = {
+		    	"messageHeader": {
+		        	"deviceContext": [
+		            	{
+		                	"name": "playbackState",
+		                	"namespace": "AudioPlayer",
+		                	"payload": {
+		                    	"streamId": "",
+		         			   	"offsetInMilliseconds": "0",
+		                    	"playerActivity": "IDLE"
+		                	}
+		            	}
+		        	]
+		    	},
+		    	"messageBody": {
+		        	"profile": "alexa-close-talk",
+		        	"locale": "en-us",
+		        	"format": "audio/L16; rate=16000; channels=1"
+		    	}
+			}
+			files = [
+				('file', ('request', json.dumps(d), 'application/json; charset=UTF-8')),
+				('file', ('audio', open(file_name), 'audio/L16; rate=16000; channels=1'))
+			]	
+			r = requests.post(url, headers=headers, files=files)
+			tf.close()
+			for v in r.headers['content-type'].split(";"):
+				if re.match('.*boundary.*', v):
+					boundary =  v.split("=")[1]
+			data = r.content.split(boundary)
+			for d in data:
+				if (len(d) >= 1024):
+			 	   audio = d.split('\r\n\r\n')[1].rstrip('--')
+			self.set_header('Content-Type', 'audio/mpeg')
+			self.write(audio)
+		self.finish()
+
+
 
 
 def main():
@@ -168,6 +236,7 @@ def main():
 											(r"/code", CodeAuthHandler),
 											(r"/logout", LogoutHandler),
 											(r"/audio", AudioHandler),
+											(r"/text", TextHandler),
 											(r'/(favicon.ico)', tornado.web.StaticFileHandler,{'path': static_path}),
 											(r'/static/(.*)', tornado.web.StaticFileHandler, {'path': static_path}),
 											], **settings)
