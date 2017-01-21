@@ -263,6 +263,7 @@ def main():
 											(r"/code", CodeAuthHandler),
 											(r"/logout", LogoutHandler),
 											(r"/audio", AudioHandler),
+											(r"/trigger", TriggerHandler),
 											(r"/text", TextHandler),
 											(r'/(favicon.ico)', tornado.web.StaticFileHandler,{'path': static_path}),
 											(r'/static/(.*)', tornado.web.StaticFileHandler, {'path': static_path}),
