@@ -29,10 +29,9 @@ function textToAlexa(text){
 
 $(document).ready(function(){
   setInterval(function(){
-    console.log("running trigger check");
     $.getJSON( "/trigger", function( data ) {
       if(data["trigger"] == true){
-        textToAlexa("hello alexa");
+        textToAlexa("hello");
       }
     });
   }, 500);
