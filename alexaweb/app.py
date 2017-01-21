@@ -58,7 +58,9 @@ class TriggerHandler(BaseHandler):
 	def get(self):
 		red = redis.from_url(redis_url)
 		print red.get(self.get_current_user() + "-trigger")
-		self.write({"trigger": ast.literal_eval(red.get(self.get_current_user() + "-trigger"))})
+		status = red.get(self.get_current_user() + "-trigger")
+		status = True if status == "True" else False
+		self.write({"trigger": status})
 		red.set(self.get_current_user() + "-trigger", False)
 		self.finish()
 
