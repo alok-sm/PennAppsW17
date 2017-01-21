@@ -183,9 +183,15 @@ class AudioHandler(BaseHandler):
 			]	
 			r = requests.post(url, headers=headers, files=files)
 			tf.close()
-			content_type = r.headers.get('Content-Type', None)
-			if content_type == None:
-				content_type = r.headers.get('content-type', None)
+
+			content_type = None
+
+			try:
+				content_type = r.headers['Content-Type']
+			except Exception as e:
+				content_type = r.headers['content-type']
+				
+
 			for v in r.headers['content-type'].split(";"):
 				if re.match(r'.*boundary.*', v):
 					boundary =  v.split("=")[1]
