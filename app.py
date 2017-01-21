@@ -272,7 +272,10 @@ def main():
 											(r'/(favicon.ico)', tornado.web.StaticFileHandler,{'path': static_path}),
 											(r'/static/(.*)', tornado.web.StaticFileHandler, {'path': static_path}),
 											], **settings)
-	http_server = tornado.httpserver.HTTPServer(application)
+	http_server = tornado.httpserver.HTTPServer(application, ssl_options={
+		'certfile' : '/etc/letsencrpt/csr/0000_csr-letsencrypt.pem',
+		'keyfile'  : '/etc/letsencrpt/key/0000_key-letsencrypt.pem'	
+	})
 	port = int(os.environ.get("PORT", 8080))
 	http_server.listen(port)
 	tornado.ioloop.IOLoop.instance().start()
