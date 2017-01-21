@@ -59,7 +59,7 @@ class QuestionHandler(BaseHandler):
 		red = redis.from_url(redis_url)
 		uid = self.get_argument("access_token")
 		print uid
-		self.write({"questions": red.get(uid + "-questions")})
+		self.write(red.get(uid + "-questions"))
 		self.finish()
 
 	@tornado.web.asynchronous
