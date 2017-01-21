@@ -74,6 +74,12 @@ class StartAuthHandler(tornado.web.RequestHandler):
 		        "productInstanceAttributes": {
 		            "deviceSerialNumber": "1"
 		        }
+		    },
+		    "profile": {
+		    	"productID": Product_ID, 
+		    	"productInstanceAttributes": {
+		            "deviceSerialNumber": "1"
+		        }
 		    }
 		})
 		url = "https://www.amazon.com/ap/oa"
