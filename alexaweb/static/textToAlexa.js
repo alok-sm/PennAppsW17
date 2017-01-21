@@ -27,10 +27,13 @@ function textToAlexa(text){
   xhr.send();
 }
 
-window.setInterval(function(){
-  $.getJSON( "/trigger", function( data ) {
-    if(data["trigger"] == true){
-      textToAlexa("hello alexa");
+$(document).ready(function(){
+  setInterval(function(){
+    console.log("running trigger check");
+    $.getJSON( "/trigger", function( data ) {
+      if(data["trigger"] == true){
+        textToAlexa("hello alexa");
+      }
     }
-  }
-}, 500)
+  }, 500);
+});
