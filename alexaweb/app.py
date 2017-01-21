@@ -190,13 +190,14 @@ class AudioHandler(BaseHandler):
 				content_type = r.headers['Content-Type']
 			except Exception as e:
 				content_type = r.headers['content-type']
-				
+
 			boundary = None
 
 			for v in r.headers['content-type'].split(";"):
 				if re.match(r'.*boundary.*', v):
 					boundary =  v.split("=")[1]
 			data = r.content.split(boundary)
+			audio = None
 			for d in data:
 				if (len(d) >= 1024):
 			 	   audio = d.split('\r\n\r\n')[1].rstrip('--')
