@@ -3,6 +3,7 @@
 		<title>Alexa Client</title>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 		<script src="static/record.js"></script>
+		<script src="static/textToAlexa.js"></script>
 		<style>
 		html, body {
 		  width:  100%;
@@ -64,7 +65,7 @@
 		var c=document.getElementById("myCanvas");
 		var ctx=c.getContext("2d");
 		var circle = new Path2D();
-		
+
 		function layout(){
 			ctx.canvas.width  = window.innerWidth;
 			ctx.canvas.height = window.innerHeight;
@@ -79,13 +80,13 @@
 			ctx.shadowOffsetY = 0;
 			ctx.shadowBlur = 10;
 			ctx.shadowColor = '#ffffee';
-			
+
 			if (is_touch_device()){
 				console.log('Touch Enabled');
 				var el=document.getElementById("touch");
 				c.ontouchstart = function(e){
 					startrecord();
-				} 
+				}
 				c.ontouchend = function(e){
 					stoprecord();
 				}
@@ -94,48 +95,48 @@
 				console.log('No Touch');
 				c.onmousedown = function(e){
 					startrecord();
-				} 
+				}
 				c.onmouseup = function(e){
 					stoprecord();
 				}
 			}
 		}
-			
 
-			
-			
+
+
+
 		function draw(col){
 			ctx.clearRect(0, 0, c.width, c.height);
 			ctx.fill();
 			ctx.strokeStyle = col;
 			ctx.stroke(circle);
 		}
-		
+
 		function log(data){
 			console.log('logging...')
 			console.log(data);
 		}
-		
+
 		function is_touch_device() {
 		  return !!('ontouchstart' in window);
 		}
-		
-		
+
+
 		window.onload = function() {
 			layout();
 			setup();
 		};
-		
+
 		window.onresize = function() {
 			location.reload();
 		};
-		
+
 		$(document).ready(function(){
 
 		   $('.notSelectable').disableSelection();
-    
+
 		});
-		
+
 		// This jQuery Plugin will disable text selection for Android and iOS devices.
 		// Stackoverflow Answer: http://stackoverflow.com/a/2723677/1195891
 		$.fn.extend({
@@ -150,7 +151,7 @@
 		        });
 		    }
 		});
-	
+
 		</script>
 	</body>
 </HTML>
