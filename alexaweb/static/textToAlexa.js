@@ -34,6 +34,6 @@ $(document).ready(function(){
       if(data["trigger"] == true){
         textToAlexa("hello alexa");
       }
-    }
+    });
   }, 500);
 });
