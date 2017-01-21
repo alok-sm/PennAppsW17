@@ -53,7 +53,7 @@ class MainHandler(BaseHandler):
 		self.finish()
 
 class QuestionHandler(BaseHandler):
-	@tornado.web.authenticated
+	# @tornado.web.authenticated
 	@tornado.web.asynchronous
 	def get(self):
 		red = redis.from_url(redis_url)
@@ -62,6 +62,7 @@ class QuestionHandler(BaseHandler):
 		self.write({"questions": red.get(uid + "-questions")})
 		self.finish()
 
+	@tornado.web.asynchronous
 	def post(self):
 		red = redis.from_url(redis_url)
 		uid = self.get_argument("access_token")
