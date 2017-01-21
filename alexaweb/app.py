@@ -201,6 +201,7 @@ class AudioHandler(BaseHandler):
 			for d in data:
 				if (len(d) >= 1024):
 			 	   audio = d.split('\r\n\r\n')[1].rstrip('--')
+			 	   print audio
 			self.set_header('Content-Type', 'audio/mpeg')
 			self.write(audio)
 		self.finish()
