@@ -188,7 +188,7 @@ class TextHandler(BaseHandler):
 
 			os.system(cmd)
 
-			
+
 			tf = open(file_name)
 
 
@@ -220,6 +220,7 @@ class TextHandler(BaseHandler):
 			]	
 			r = requests.post(url, headers=headers, files=files)
 			tf.close()
+			print r.headers
 			for v in r.headers['content-type'].split(";"):
 				if re.match('.*boundary.*', v):
 					boundary =  v.split("=")[1]
