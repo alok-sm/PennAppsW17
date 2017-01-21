@@ -185,6 +185,8 @@ class TextHandler(BaseHandler):
 			print file_name
 			print cmd
 
+
+			tf = open(file_name)
 			os.system(cmd)
 
 
@@ -212,7 +214,7 @@ class TextHandler(BaseHandler):
 			}
 			files = [
 				('file', ('request', json.dumps(d), 'application/json; charset=UTF-8')),
-				('file', ('audio', open(file_name), 'audio/L16; rate=16000; channels=1'))
+				('file', ('audio', tf, 'audio/L16; rate=16000; channels=1'))
 			]	
 			r = requests.post(url, headers=headers, files=files)
 			tf.close()
