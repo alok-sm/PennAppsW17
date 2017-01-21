@@ -59,12 +59,14 @@ class QuestionHandler(BaseHandler):
 		red = redis.from_url(redis_url)
 		uid = self.get_current_user()
 		self.write({"questions": red.get(uid + "-questions")})
+		self.finish()
 
 	def post(self):
 		red = redis.from_url(redis_url)
 		uid = self.get_current_user()
 		red.set(uid + "-questions", self.get_argument("questions"))
 		self.write({"success": True})
+		self.finish()
 
 class TriggerHandler(BaseHandler):
 	@tornado.web.authenticated
