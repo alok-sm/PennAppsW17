@@ -26,3 +26,11 @@ function textToAlexa(text){
   }
   xhr.send();
 }
+
+window.setInterval(function(){
+  $.getJSON( "/trigger", function( data ) {
+    if(data["trigger"] == true){
+      textToAlexa("hello alexa");
+    }
+  }
+}, 500)
