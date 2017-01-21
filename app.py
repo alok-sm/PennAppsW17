@@ -274,7 +274,7 @@ def main():
 											], **settings)
 	http_server = tornado.httpserver.HTTPServer(application, ssl_options={
 		'certfile' : '/etc/letsencrypt/csr/0000_csr-letsencrypt.pem',
-		'keyfile'  : '/etc/letsencrypt/key/0000_key-letsencrypt.pem'	
+		'keyfile' : '/etc/letsencrypt/keys/0000_key-letsencrypt.pem'	
 	})
 	port = int(os.environ.get("PORT", 8080))
 	http_server.listen(port)
