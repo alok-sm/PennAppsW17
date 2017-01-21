@@ -32,6 +32,10 @@ def gettoken(uid):
 	else:
 		return False
 	
+def settrigger(user):
+	red = redis.from_url(redis_url)
+	self.set(user + "-trigger", True)
+
 class BaseHandler(tornado.web.RequestHandler):
     def get_current_user(self):
         return self.get_cookie("user")
@@ -47,6 +51,14 @@ class MainHandler(BaseHandler):
 		self.write(resp)
 		self.finish()
 
+class TriggerHandler(BaseHandler):
+	@tornado.web.authenticated
+	@tornado.web.asynchronous
+	def get(self):
+		red = redis.from_url(redis_url)
+		self.write(bool(red.get(self.get_current_user() + "-trigger")))
+		red.set(self.get_current_user() + "-trigger", False)
+		self.finish()
 
 class StartAuthHandler(tornado.web.RequestHandler):
 	@tornado.web.asynchronous
