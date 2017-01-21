@@ -180,7 +180,7 @@ class TextHandler(BaseHandler):
 			random_str = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(20))
 			file_name = "/tmp/{}.wav".format(random_str)
 
-			os.system('os.system("espeak "hello" --stdout > {}")'.format(file_name))
+			os.system('espeak "{}" --stdout > {}"'.format(text, file_name))
 
 
 			url = 'https://access-alexa-na.amazon.com/v1/avs/speechrecognizer/recognize'
