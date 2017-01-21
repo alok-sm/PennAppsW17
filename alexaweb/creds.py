@@ -1,14 +1,4 @@
 #Alexa
-<<<<<<< HEAD
-Security_Profile_Description =""
-Security_Profile_ID  = ""
-Client_ID = ""
-Client_Secret = ""
-Product_ID = ""
-
-#Redis
-redis_url = ""
-=======
 Security_Profile_Description ="AlexaWeb"
 Security_Profile_ID  = "amzn1.application.5e1e5e9dc99c450bb56aac577df06fa9"
 Client_ID = "amzn1.application-oa2-client.0d9764a2c51d4eeaa69f732b77538bd9"
@@ -17,4 +7,3 @@ Product_ID = "AlexaWeb"
 
 #Redis
 redis_url = "127.0.0.1:6379"
->>>>>>> 65a9dd7831888cfcdc791fa1220fd50c66547b9c
