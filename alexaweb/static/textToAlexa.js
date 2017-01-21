@@ -31,7 +31,7 @@ $(document).ready(function(){
   setInterval(function(){
     $.getJSON( "/trigger", function( data ) {
       if(data["trigger"] == true){
-        textToAlexa("hello");
+        textToAlexa("open a quiz");
       }
     });
   }, 500);
