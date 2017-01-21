@@ -188,8 +188,13 @@ class TextHandler(BaseHandler):
 
 			os.system(cmd)
 
+			_input = AudioSegment.from_wav(file_name)
+                        tf = tempfile.NamedTemporaryFile(suffix=".wav")
+                        output = _input.set_channels(1).set_frame_rate(16000)
+                        f = output.export(tf.name, format="wav")
 
-			tf = open(file_name)
+
+			#tf = open(file_name)
 
 
 			url = 'https://access-alexa-na.amazon.com/v1/avs/speechrecognizer/recognize'
@@ -220,7 +225,7 @@ class TextHandler(BaseHandler):
 			]	
 			r = requests.post(url, headers=headers, files=files)
 			tf.close()
-			print r.headers
+			print r
 			for v in r.headers['content-type'].split(";"):
 				if re.match('.*boundary.*', v):
 					boundary =  v.split("=")[1]
