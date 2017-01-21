@@ -52,28 +52,6 @@ class MainHandler(BaseHandler):
 		self.write(resp)
 		self.finish()
 
-class QuestionHandler(BaseHandler):
-	# @tornado.web.authenticated
-	@tornado.web.asynchronous
-	def get(self):
-		red = redis.from_url(redis_url)
-		uid = self.get_argument("access_token")
-		print uid
-		res = red.get(uid + "-questions")
-		res = res if res != None else ""
-		self.write(res)
-		self.finish()
-
-	@tornado.web.asynchronous
-	def post(self):
-		red = redis.from_url(redis_url)
-		uid = self.get_argument("access_token")
-		print uid
-		red.set(uid + "-questions", self.get_argument("questions"))
-		print self.get_argument("questions")
-		self.write({"success": True})
-		self.finish()
-
 class TriggerHandler(BaseHandler):
 	@tornado.web.authenticated
 	@tornado.web.asynchronous
@@ -119,7 +97,6 @@ class CodeAuthHandler(tornado.web.RequestHandler):
 		uid = str(uuid.uuid4())
 		red = redis.from_url(redis_url)
 		resp = json.loads(r.text)
-		print resp
 		red.set(uid+"-access_token", resp['access_token'])
 		red.expire(uid+"-access_token", 3600)
 		red.set(uid+"-refresh_token", resp['refresh_token'])
@@ -291,7 +268,6 @@ def main():
 											(r"/logout", LogoutHandler),
 											(r"/audio", AudioHandler),
 											(r"/trigger", TriggerHandler),
-											(r"/questions", QuestionHandler),
 											(r"/text", TextHandler),
 											(r'/(favicon.ico)', tornado.web.StaticFileHandler,{'path': static_path}),
 											(r'/static/(.*)', tornado.web.StaticFileHandler, {'path': static_path}),
