@@ -52,6 +52,20 @@ class MainHandler(BaseHandler):
 		self.write(resp)
 		self.finish()
 
+class QuestionHandler(BaseHandler):
+	@tornado.web.authenticated
+	@tornado.web.asynchronous
+	def get(self):
+		red = redis.from_url(redis_url)
+		uid = self.get_current_user()
+		self.write({"questions": red.get(uid + "-questions")})
+
+	def post(self):
+		red = redis.from_url(redis_url)
+		uid = self.get_current_user()
+		red.set(uid + "-questions", self.get_argument("questions"))
+		self.write({"success": True})
+
 class TriggerHandler(BaseHandler):
 	@tornado.web.authenticated
 	@tornado.web.asynchronous
@@ -268,6 +282,7 @@ def main():
 											(r"/logout", LogoutHandler),
 											(r"/audio", AudioHandler),
 											(r"/trigger", TriggerHandler),
+											(r"/questions", QuestionHandler),
 											(r"/text", TextHandler),
 											(r'/(favicon.ico)', tornado.web.StaticFileHandler,{'path': static_path}),
 											(r'/static/(.*)', tornado.web.StaticFileHandler, {'path': static_path}),
