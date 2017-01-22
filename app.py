@@ -120,6 +120,7 @@ class AudioHandler(BaseHandler):
 	@tornado.web.authenticated
 	@tornado.web.asynchronous
 	def post(self):
+		print self.request.body
 		uid = tornado.escape.xhtml_escape(self.current_user)
 		token = gettoken(uid)
 		if (token == False):
