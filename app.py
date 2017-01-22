@@ -12,7 +12,6 @@ import redis
 import uuid
 import random
 import string
-import ast
 from pydub import AudioSegment
 
 	
@@ -32,10 +31,6 @@ def gettoken(uid):
 		return resp['access_token']
 	else:
 		return False
-	
-def settrigger(user):
-	red = redis.from_url(redis_url)
-	self.set(user + "-trigger", True)
 
 class BaseHandler(tornado.web.RequestHandler):
     def get_current_user(self):
@@ -79,7 +74,7 @@ class StartAuthHandler(tornado.web.RequestHandler):
 		url = "https://www.amazon.com/ap/oa"
 		path = self.request.protocol + "://" + self.request.host 
 		callback = path + "/code"
-		payload = {"client_id" : Client_ID, "scope" : r"alexa:all", "scope_data" : sd, "response_type" : "code", "redirect_uri" : callback }
+		payload = {"client_id" : Client_ID, "scope" : "alexa:all", "scope_data" : sd, "response_type" : "code", "redirect_uri" : callback }
 		req = Request('GET', url, params=payload)
 		p = req.prepare()
 		self.redirect(p.url)
@@ -116,76 +111,6 @@ class LogoutHandler(BaseHandler):
 		self.write("Logged Out, Goodbye")
 		self.finish()
 				
-class AudioHandler(BaseHandler):
-	@tornado.web.authenticated
-	@tornado.web.asynchronous
-	def post(self):
-		print self.request.body
-		uid = tornado.escape.xhtml_escape(self.current_user)
-		token = gettoken(uid)
-		if (token == False):
-			self.set_status(403)
-		else:
-			rxfile = self.request.files['data'][0]['body']
-			tf = tempfile.NamedTemporaryFile(suffix=".wav")
-			tf.write(rxfile)
-			_input = AudioSegment.from_wav(tf.name)
-			tf.close()
-			tf = tempfile.NamedTemporaryFile(suffix=".wav")
-			output = _input.set_channels(1).set_frame_rate(16000)
-			f = output.export(tf.name, format="wav")
-			url = 'https://access-alexa-na.amazon.com/v1/avs/speechrecognizer/recognize'
-			headers = {'Authorization' : 'Bearer %s' % token}
-			d = {
-		    	"messageHeader": {
-		        	"deviceContext": [
-		            	{
-		                	"name": "playbackState",
-		                	"namespace": "AudioPlayer",
-		                	"payload": {
-		                    	"streamId": "",
-		         			   	"offsetInMilliseconds": "0",
-		                    	"playerActivity": "IDLE"
-		                	}
-		            	}
-		        	]
-		    	},
-		    	"messageBody": {
-		        	"profile": "alexa-close-talk",
-		        	"locale": "en-us",
-		        	"format": "audio/L16; rate=16000; channels=1"
-		    	}
-			}
-			files = [
-				('file', ('request', json.dumps(d), 'application/json; charset=UTF-8')),
-				('file', ('audio', tf, 'audio/L16; rate=16000; channels=1'))
-			]	
-			r = requests.post(url, headers=headers, files=files)
-			tf.close()
-			# for v in r.headers['content-type'].split(";"):
-			# 	if re.match('.*boundary.*', v):
-			# 		boundary =  v.split("=")[1]
-			print "content type", r.headers
-			# print "all", r.text
-
-			boundary = r.headers
-			boundary = boundary['content-type']
-			boundary = [x for x in boundary.split(';') if 'boundary' in x]
-			boundary = boundary[0]
-			boundary = boundary.split('=')
-			boundary = boundary[1]
-
-			print boundary
-
-			data = r.content.split(boundary)
-			for d in data:
-				if (len(d) >= 1024):
-			 	   audio = d.split('\r\n\r\n')[1].rstrip('--')
-			self.set_header('Content-Type', 'audio/mpeg')
-			self.write(audio)
-		self.finish()
-
-
 class QuestionHandler(BaseHandler):
 	# @tornado.web.authenticated
 
@@ -284,12 +209,9 @@ class TextHandler(BaseHandler):
 			]	
 			r = requests.post(url, headers=headers, files=files)
 			tf.close()
-			# print r
-			# for v in r.headers['content-type'].split(";"):
-			# 	if re.match('.*boundary.*', v):
-			# 		boundary =  v.split("=")[1]
-
-			boundary = [x for x in r.headers['content-type'].split(';') if 'boundary' in x][0].split('=')[1]
+			for v in r.headers['content-type'].split(";"):
+				if re.match('.*boundary.*', v):
+					boundary =  v.split("=")[1]
 
 			data = r.content.split(boundary)
 			for d in data:
@@ -299,7 +221,62 @@ class TextHandler(BaseHandler):
 			self.write(audio)
 		self.finish()
 
+class AudioHandler(BaseHandler):
+	@tornado.web.authenticated
+	@tornado.web.asynchronous
+	def post(self):
+		uid = tornado.escape.xhtml_escape(self.current_user)
+		token = gettoken(uid)
+		if (token == False):
+			self.set_status(403)
+		else:
+			rxfile = self.request.files['data'][0]['body']
+			tf = tempfile.NamedTemporaryFile(suffix=".wav")
+			tf.write(rxfile)
+			_input = AudioSegment.from_wav(tf.name)
+			tf.close()
+			tf = tempfile.NamedTemporaryFile(suffix=".wav")
+			output = _input.set_channels(1).set_frame_rate(16000)
+			f = output.export(tf.name, format="wav")
+			url = 'https://access-alexa-na.amazon.com/v1/avs/speechrecognizer/recognize'
+			headers = {'Authorization' : 'Bearer %s' % token}
+			d = {
+		    	"messageHeader": {
+		        	"deviceContext": [
+		            	{
+		                	"name": "playbackState",
+		                	"namespace": "AudioPlayer",
+		                	"payload": {
+		                    	"streamId": "",
+		         			   	"offsetInMilliseconds": "0",
+		                    	"playerActivity": "IDLE"
+		                	}
+		            	}
+		        	]
+		    	},
+		    	"messageBody": {
+		        	"profile": "alexa-close-talk",
+		        	"locale": "en-us",
+		        	"format": "audio/L16; rate=16000; channels=1"
+		    	}
+			}
+			files = [
+				('file', ('request', json.dumps(d), 'application/json; charset=UTF-8')),
+				('file', ('audio', tf, 'audio/L16; rate=16000; channels=1'))
+			]	
+			r = requests.post(url, headers=headers, files=files)
+			tf.close()
+			for v in r.headers['content-type'].split(";"):
+				if re.match('.*boundary.*', v):
+					boundary =  v.split("=")[1]
 
+			data = r.content.split(boundary)
+			for d in data:
+				if (len(d) >= 1024):
+			 	   audio = d.split('\r\n\r\n')[1].rstrip('--')
+			self.set_header('Content-Type', 'audio/mpeg')
+			self.write(audio)
+		self.finish()
 
 
 def main():
