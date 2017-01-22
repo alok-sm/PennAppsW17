@@ -167,6 +167,8 @@ class AudioHandler(BaseHandler):
 
 			boundary = [x for x in r.headers['content-type'].split(';') if 'boundary' in x][0].split('=')[1]
 
+			print boundary
+
 			data = r.content.split(boundary)
 			for d in data:
 				if (len(d) >= 1024):
