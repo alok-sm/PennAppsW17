@@ -164,7 +164,7 @@ class AudioHandler(BaseHandler):
 			# for v in r.headers['content-type'].split(";"):
 			# 	if re.match('.*boundary.*', v):
 			# 		boundary =  v.split("=")[1]
-			print r.headers['content-type']
+			print "content type", r.headers['content-type']
 
 			boundary = [x for x in r.headers['content-type'].split(';') if 'boundary' in x][0].split('=')[1]
 
@@ -203,9 +203,9 @@ class TextHandler(BaseHandler):
 			file_name = "/tmp/{}.wav".format(random_str)
 			cmd = 'espeak "{}" --stdout > {}'.format(text, file_name)
 
-			print text
-			print file_name
-			print cmd
+			# print text
+			# print file_name
+			# print cmd
 
 
 			os.system(cmd)
@@ -247,7 +247,7 @@ class TextHandler(BaseHandler):
 			]	
 			r = requests.post(url, headers=headers, files=files)
 			tf.close()
-			print r
+			# print r
 			# for v in r.headers['content-type'].split(";"):
 			# 	if re.match('.*boundary.*', v):
 			# 		boundary =  v.split("=")[1]
