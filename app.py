@@ -164,7 +164,7 @@ class AudioHandler(BaseHandler):
 			# for v in r.headers['content-type'].split(";"):
 			# 	if re.match('.*boundary.*', v):
 			# 		boundary =  v.split("=")[1]
-			print "content type", r.headers['content-type']
+			print "content type", r.headers
 
 			boundary = [x for x in r.headers['content-type'].split(';') if 'boundary' in x][0].split('=')[1]
 
