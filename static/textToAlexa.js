@@ -34,5 +34,5 @@ $(document).ready(function(){
         textToAlexa("open train brain");
       }
     });
-  }, 500);
+  }, 2000);
 });

@@ -1,0 +1,86 @@
+<html>
+  <head>
+    <script>
+      questions = [];
+      enabled = "mult";
+      function hide_show(value){
+        enabled = value;
+        ids = ["mult", "truf", "fr"];
+        ids.splice(ids.indexOf(value), 1);
+        document.getElementById(value).style.display = "block";
+        for(var i = 0; i < ids.length; i++){
+          document.getElementById(ids[i]).style.display = "none";
+        }
+      }
+
+      function send_questions(){
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/questions", true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.send("email="+document.getElementById("eml").value+
+                 "&questions="+JSON.stringify(questions));
+      }
+
+      function display_finished(question, answer){
+        new_q = document.createElement("div");
+        //new_q.setAttribute("id", ""+questions.length);
+        new_q.innerHTML = "<h4>"+question+"</h4><p>"+answer+"</p><button id="+questions.length+" onclick='removeParent(this)'>X</button>";
+        document.getElementById("finished").appendChild(new_q);
+        questions.push({text: question, correctAnswer: answer});
+        send_questions();
+      }
+
+
+      function add_question(){
+        if(enabled == "mult"){
+          display_finished(document.getElementById("q").value+
+                           "? 1: "+document.getElementById("a1").value+
+                           ". 2: " + document.getElementById("a2").value+
+                           ". 3: " + document.getElementById("a3").value+
+                           ". 4: " + document.getElementById("a4").value,
+                           document.getElementById("a").value);
+        }else if (enabled == "truf") {
+          display_finished(document.getElementById("q").value,
+                           ""+document.getElementById("true").checked);
+        }else if (enabled == "fr") {
+          display_finished(document.getElementById("q").value,
+                           document.getElementById("freeresp").value);
+        }
+      }
+      function removeParent(node){
+        id = parseInt(node.id);
+        questions.splice(id, 1);
+        node.parentNode.parentNode.removeChild(node.parentNode);
+        send_questions();
+      }
+    </script>
+  </head>
+  <body onload="hide_show('mult')">
+    <div id="finished"></div>
+    <div id="container">
+      <input id="q" style="width:100%" type="text" placeholder="Question"></input>
+      <div style="padding-top: 10px;" id="qt">
+        <input type="radio" name="qt" value="mult" onclick="hide_show('mult')" checked="checked">Multiple Choice</input>
+        <input type="radio" name="qt" value="truf" onclick="hide_show('truf')">True/False</input>
+        <input type="radio" name="qt" value="fr" onclick="hide_show('fr')">Free Response</input>
+      </div>
+      <div style="padding-top: 10px;" id="mult">
+        <input id="a1" type="text" placeholder="Answer 1"></input>
+        <input id="a2" type="text" placeholder="Answer 2"></input>
+        <input id="a3" type="text" placeholder="Answer 3"></input>
+        <input id="a4" type="text" placeholder="Answer 4"></input>
+        <input id="a" type="number" placeholder="1"></input>
+      </div>
+      <div style="padding-top: 10px;" id="truf">
+        <input id="true" type="radio" name="tf" value="true">True</input>
+        <input type="radio" name="tf" value="false">False</input>
+      </div>
+      <div style="padding-top: 10px;" id="fr">
+        <input id="freeresp" type="text" placeholder="Free Response"></input>
+      </div>
+      <br>
+      <button onclick="add_question()">Add</button>
+    </div>
+    <input type="email" id="eml" placeholder="Email"></input>
+  <body>
+</html>
