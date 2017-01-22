@@ -10,8 +10,8 @@ import re
 import tempfile
 import redis
 import uuid
-import random
-import string
+# import random
+# import string
 from pydub import AudioSegment
 
 	
@@ -47,17 +47,17 @@ class MainHandler(BaseHandler):
 		self.write(resp)
 		self.finish()
 
-class TriggerHandler(BaseHandler):
-	@tornado.web.authenticated
-	@tornado.web.asynchronous
-	def get(self):
-		red = redis.from_url(redis_url)
-		# print self.get_current_user(), "=>", red.get(self.get_current_user() + "-trigger")
-		status = red.get(self.get_current_user() + "-trigger")
-		status = True if status == "True" else False
-		self.write({"trigger": status})
-		red.set(self.get_current_user() + "-trigger", False)
-		self.finish()
+# class TriggerHandler(BaseHandler):
+# 	@tornado.web.authenticated
+# 	@tornado.web.asynchronous
+# 	def get(self):
+# 		red = redis.from_url(redis_url)
+# 		# print self.get_current_user(), "=>", red.get(self.get_current_user() + "-trigger")
+# 		status = red.get(self.get_current_user() + "-trigger")
+# 		status = True if status == "True" else False
+# 		self.write({"trigger": status})
+# 		red.set(self.get_current_user() + "-trigger", False)
+# 		self.finish()
 
 class StartAuthHandler(tornado.web.RequestHandler):
 	@tornado.web.asynchronous
@@ -111,115 +111,115 @@ class LogoutHandler(BaseHandler):
 		self.write("Logged Out, Goodbye")
 		self.finish()
 				
-class QuestionHandler(BaseHandler):
-	# @tornado.web.authenticated
+# class QuestionHandler(BaseHandler):
+# 	# @tornado.web.authenticated
 
-	def get_email_from_token(self, token):
-		url = "https://api.amazon.com/user/profile?access_token={}".format(token)
-		req = requests.get(url)
-		return str(json.loads(req.text)['email'])
-
-
-	@tornado.web.asynchronous
-	def get(self):
-		red = redis.from_url(redis_url)
-		email = self.get_email_from_token(self.get_argument("access_token"))
-		print email
-		res = red.get(email + "-questions")
-		res = res if res != None else ""
-		self.write(res)
-		self.finish()
-
-	@tornado.web.asynchronous
-	def post(self):
-		red = redis.from_url(redis_url)
-		email = self.get_argument("email")
-		print email
-		red.set(email + "-questions", self.get_argument("questions"))
-		print self.get_argument("questions")
-		self.write({"success": True})
-		self.finish()
+# 	def get_email_from_token(self, token):
+# 		url = "https://api.amazon.com/user/profile?access_token={}".format(token)
+# 		req = requests.get(url)
+# 		return str(json.loads(req.text)['email'])
 
 
-class TextHandler(BaseHandler):
-	@tornado.web.authenticated
-	@tornado.web.asynchronous
-	def get(self):
-		text = self.get_argument("text", None, True)
+# 	@tornado.web.asynchronous
+# 	def get(self):
+# 		red = redis.from_url(redis_url)
+# 		email = self.get_email_from_token(self.get_argument("access_token"))
+# 		print email
+# 		res = red.get(email + "-questions")
+# 		res = res if res != None else ""
+# 		self.write(res)
+# 		self.finish()
 
-		uid = tornado.escape.xhtml_escape(self.current_user)
-		token = gettoken(uid)
-		if (token == False):
-			self.set_status(403)
-		else:
-			# rxfile = self.request.files['data'][0]['body']
-			# tf = tempfile.NamedTemporaryFile(suffix=".wav")
-			# tf.write(rxfile)
-			# _input = AudioSegment.from_wav(tf.name)
-			# tf.close()
-			# tf = tempfile.NamedTemporaryFile(suffix=".wav")
-			# output = _input.set_channels(1).set_frame_rate(16000)
-			# f = output.export(tf.name, format="wav")
-
-			random_str = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(20))
-			file_name = "/tmp/{}.wav".format(random_str)
-			cmd = 'espeak "{}" --stdout > {}'.format(text, file_name)
-
-			# print text
-			# print file_name
-			# print cmd
+# 	@tornado.web.asynchronous
+# 	def post(self):
+# 		red = redis.from_url(redis_url)
+# 		email = self.get_argument("email")
+# 		print email
+# 		red.set(email + "-questions", self.get_argument("questions"))
+# 		print self.get_argument("questions")
+# 		self.write({"success": True})
+# 		self.finish()
 
 
-			os.system(cmd)
+# class TextHandler(BaseHandler):
+# 	@tornado.web.authenticated
+# 	@tornado.web.asynchronous
+# 	def get(self):
+# 		text = self.get_argument("text", None, True)
 
-			_input = AudioSegment.from_wav(file_name)
-                        tf = tempfile.NamedTemporaryFile(suffix=".wav")
-                        output = _input.set_channels(1).set_frame_rate(16000)
-                        f = output.export(tf.name, format="wav")
+# 		uid = tornado.escape.xhtml_escape(self.current_user)
+# 		token = gettoken(uid)
+# 		if (token == False):
+# 			self.set_status(403)
+# 		else:
+# 			# rxfile = self.request.files['data'][0]['body']
+# 			# tf = tempfile.NamedTemporaryFile(suffix=".wav")
+# 			# tf.write(rxfile)
+# 			# _input = AudioSegment.from_wav(tf.name)
+# 			# tf.close()
+# 			# tf = tempfile.NamedTemporaryFile(suffix=".wav")
+# 			# output = _input.set_channels(1).set_frame_rate(16000)
+# 			# f = output.export(tf.name, format="wav")
+
+# 			random_str = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(20))
+# 			file_name = "/tmp/{}.wav".format(random_str)
+# 			cmd = 'espeak "{}" --stdout > {}'.format(text, file_name)
+
+# 			# print text
+# 			# print file_name
+# 			# print cmd
 
 
-			#tf = open(file_name)
+# 			os.system(cmd)
+
+# 			_input = AudioSegment.from_wav(file_name)
+#                         tf = tempfile.NamedTemporaryFile(suffix=".wav")
+#                         output = _input.set_channels(1).set_frame_rate(16000)
+#                         f = output.export(tf.name, format="wav")
 
 
-			url = 'https://access-alexa-na.amazon.com/v1/avs/speechrecognizer/recognize'
-			headers = {'Authorization' : 'Bearer %s' % token}
-			d = {
-		    	"messageHeader": {
-		        	"deviceContext": [
-		            	{
-		                	"name": "playbackState",
-		                	"namespace": "AudioPlayer",
-		                	"payload": {
-		                    	"streamId": "",
-		         			   	"offsetInMilliseconds": "0",
-		                    	"playerActivity": "IDLE"
-		                	}
-		            	}
-		        	]
-		    	},
-		    	"messageBody": {
-		        	"profile": "alexa-close-talk",
-		        	"locale": "en-us",
-		        	"format": "audio/L16; rate=16000; channels=1"
-		    	}
-			}
-			files = [
-				('file', ('request', json.dumps(d), 'application/json; charset=UTF-8')),
-				('file', ('audio', tf, 'audio/L16; rate=16000; channels=1'))
-			]	
-			r = requests.post(url, headers=headers, files=files)
-			tf.close()
-			for v in r.headers['content-type'].split(";"):
-				if re.match('.*boundary.*', v):
-					boundary =  v.split("=")[1]
+# 			#tf = open(file_name)
 
-			data = r.content.split(boundary)
-			for d in data:
-				if (len(d) >= 1024):
-			 	   audio = d.split('\r\n\r\n')[1].rstrip('--')
-			self.set_header('Content-Type', 'audio/mpeg')
-			self.write(audio)
-		self.finish()
+
+# 			url = 'https://access-alexa-na.amazon.com/v1/avs/speechrecognizer/recognize'
+# 			headers = {'Authorization' : 'Bearer %s' % token}
+# 			d = {
+# 		    	"messageHeader": {
+# 		        	"deviceContext": [
+# 		            	{
+# 		                	"name": "playbackState",
+# 		                	"namespace": "AudioPlayer",
+# 		                	"payload": {
+# 		                    	"streamId": "",
+# 		         			   	"offsetInMilliseconds": "0",
+# 		                    	"playerActivity": "IDLE"
+# 		                	}
+# 		            	}
+# 		        	]
+# 		    	},
+# 		    	"messageBody": {
+# 		        	"profile": "alexa-close-talk",
+# 		        	"locale": "en-us",
+# 		        	"format": "audio/L16; rate=16000; channels=1"
+# 		    	}
+# 			}
+# 			files = [
+# 				('file', ('request', json.dumps(d), 'application/json; charset=UTF-8')),
+# 				('file', ('audio', tf, 'audio/L16; rate=16000; channels=1'))
+# 			]	
+# 			r = requests.post(url, headers=headers, files=files)
+# 			tf.close()
+# 			for v in r.headers['content-type'].split(";"):
+# 				if re.match('.*boundary.*', v):
+# 					boundary =  v.split("=")[1]
+
+# 			data = r.content.split(boundary)
+# 			for d in data:
+# 				if (len(d) >= 1024):
+# 			 	   audio = d.split('\r\n\r\n')[1].rstrip('--')
+# 			self.set_header('Content-Type', 'audio/mpeg')
+# 			self.write(audio)
+# 		self.finish()
 
 class AudioHandler(BaseHandler):
 	@tornado.web.authenticated
@@ -290,9 +290,9 @@ def main():
 											(r"/code", CodeAuthHandler),
 											(r"/logout", LogoutHandler),
 											(r"/audio", AudioHandler),
-											(r"/questions", QuestionHandler),
-											(r"/trigger", TriggerHandler),
-											(r"/text", TextHandler),
+											# (r"/questions", QuestionHandler),
+											# (r"/trigger", TriggerHandler),
+											# (r"/text", TextHandler),
 											(r'/(favicon.ico)', tornado.web.StaticFileHandler,{'path': static_path}),
 											(r'/static/(.*)', tornado.web.StaticFileHandler, {'path': static_path}),
 											], **settings)
