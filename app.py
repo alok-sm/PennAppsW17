@@ -181,6 +181,36 @@ class AudioHandler(BaseHandler):
 		self.finish()
 
 
+class QuestionHandler(BaseHandler):
+	# @tornado.web.authenticated
+
+	def get_email_from_token(token):
+		url = "https://api.amazon.com/user/profile?access_token={}".format(token)
+		req = requests.get(url)
+		return str(json.loads(req.text)['email'])
+
+
+	@tornado.web.asynchronous
+	def get(self):
+		red = redis.from_url(redis_url)
+		email = get_email_from_token(self.get_argument("access_token"))
+		print email
+		res = red.get(email + "-questions")
+		res = res if res != None else ""
+		self.write(res)
+		self.finish()
+
+	@tornado.web.asynchronous
+	def post(self):
+		red = redis.from_url(redis_url)
+		email = self.get_argument("access_token")
+		print email
+		red.set(email + "-questions", self.get_argument("questions"))
+		print self.get_argument("questions")
+		self.write({"success": True})
+		self.finish()
+
+
 class TextHandler(BaseHandler):
 	@tornado.web.authenticated
 	@tornado.web.asynchronous
@@ -278,6 +308,7 @@ def main():
 											(r"/code", CodeAuthHandler),
 											(r"/logout", LogoutHandler),
 											(r"/audio", AudioHandler),
+											(r"/questions", QuestionHandler),
 											(r"/trigger", TriggerHandler),
 											(r"/text", TextHandler),
 											(r'/(favicon.ico)', tornado.web.StaticFileHandler,{'path': static_path}),
