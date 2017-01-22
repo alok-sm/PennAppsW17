@@ -203,7 +203,7 @@ class QuestionHandler(BaseHandler):
 	@tornado.web.asynchronous
 	def post(self):
 		red = redis.from_url(redis_url)
-		email = self.get_email_from_token(self.get_argument("access_token"))
+		email = self.get_argument("email")
 		print email
 		red.set(email + "-questions", self.get_argument("questions"))
 		print self.get_argument("questions")
