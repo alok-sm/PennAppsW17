@@ -12,13 +12,25 @@
           document.getElementById(ids[i]).style.display = "none";
         }
       }
+
+      function send_questions(){
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/questions", true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.send("email="+document.getElementById("eml").value+
+                 "&questions="+JSON.stringify(questions));
+      }
+
       function display_finished(question, answer){
         new_q = document.createElement("div");
         //new_q.setAttribute("id", ""+questions.length);
         new_q.innerHTML = "<h4>"+question+"</h4><p>"+answer+"</p><button id="+questions.length+" onclick='removeParent(this)'>X</button>";
         document.getElementById("finished").appendChild(new_q);
         questions.push({text: question, correctAnswer: answer});
+        send_questions();
       }
+
+
       function add_question(){
         if(enabled == "mult"){
           display_finished(document.getElementById("q").value+
@@ -38,9 +50,8 @@
       function removeParent(node){
         id = parseInt(node.id);
         questions.splice(id, 1);
-        console.log(id);
-        console.log(node);
-        node.parentNode.parentNode.remove(node.parentNode);
+        node.parentNode.parentNode.removeChild(node.parentNode);
+        send_questions();
       }
     </script>
   </head>
@@ -70,5 +81,6 @@
       <br>
       <button onclick="add_question()">Add</button>
     </div>
+    <input type="email" id="eml" placeholder="Email"></input>
   <body>
 </html>
