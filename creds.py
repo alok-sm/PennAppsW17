@@ -1,9 +1,9 @@
 #Alexa
-Security_Profile_Description ="AlexaWeb"
-Security_Profile_ID  = "amzn1.application.5e1e5e9dc99c450bb56aac577df06fa9"
-Client_ID = "amzn1.application-oa2-client.0d9764a2c51d4eeaa69f732b77538bd9"
-Client_Secret = "c8b65c9c9e35030f173550ef08b79e0dae8ecca0ca9241dcc61f2d5c2b6cb29a"
-Product_ID = "AlexaWeb"
+Security_Profile_Description ="Web_Alexa"
+Security_Profile_ID  = "amzn1.application.3fcde4699234457580c480670128cff5"
+Client_ID = "amzn1.application-oa2-client.0c6cd5dbf4b34a3885572cc8804e703b"
+Client_Secret = "25cdcab2ed015f69c4bc02769d0eb58564bb72e5c1e2430832f0853e28e97a6e"
+Product_ID = "Web_Alexa"
 
 #Redis
 redis_url = "127.0.0.1:6379"
