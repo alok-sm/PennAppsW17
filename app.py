@@ -79,7 +79,7 @@ class StartAuthHandler(tornado.web.RequestHandler):
 		url = "https://www.amazon.com/ap/oa"
 		path = self.request.protocol + "://" + self.request.host 
 		callback = path + "/code"
-		payload = {"client_id" : Client_ID, "scope" : r"alexa:all", "scope_data" : sd, "response_type" : "code", "redirect_uri" : callback }
+		payload = {"client_id" : Client_ID, "scope" : r"alexa:all profile", "scope_data" : sd, "response_type" : "code", "redirect_uri" : callback }
 		req = Request('GET', url, params=payload)
 		p = req.prepare()
 		self.redirect(p.url)
@@ -167,7 +167,7 @@ class AudioHandler(BaseHandler):
 
 			boundary = [x for x in r.headers['content-type'].split(';') if 'boundary' in x][0].split('=')[1]
 
-			print boundary
+			# print boundary
 
 			data = r.content.split(boundary)
 			for d in data:
@@ -247,9 +247,12 @@ class TextHandler(BaseHandler):
 			r = requests.post(url, headers=headers, files=files)
 			tf.close()
 			print r
-			for v in r.headers['content-type'].split(";"):
-				if re.match('.*boundary.*', v):
-					boundary =  v.split("=")[1]
+			# for v in r.headers['content-type'].split(";"):
+			# 	if re.match('.*boundary.*', v):
+			# 		boundary =  v.split("=")[1]
+
+			boundary = [x for x in r.headers['content-type'].split(';') if 'boundary' in x][0].split('=')[1]
+
 			data = r.content.split(boundary)
 			for d in data:
 				if (len(d) >= 1024):
