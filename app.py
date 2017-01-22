@@ -184,7 +184,7 @@ class AudioHandler(BaseHandler):
 class QuestionHandler(BaseHandler):
 	# @tornado.web.authenticated
 
-	def get_email_from_token(token):
+	def get_email_from_token(self, token):
 		url = "https://api.amazon.com/user/profile?access_token={}".format(token)
 		req = requests.get(url)
 		return str(json.loads(req.text)['email'])
@@ -193,7 +193,7 @@ class QuestionHandler(BaseHandler):
 	@tornado.web.asynchronous
 	def get(self):
 		red = redis.from_url(redis_url)
-		email = get_email_from_token(self.get_argument("access_token"))
+		email = self.get_email_from_token(self.get_argument("access_token"))
 		print email
 		res = red.get(email + "-questions")
 		res = res if res != None else ""
@@ -203,7 +203,7 @@ class QuestionHandler(BaseHandler):
 	@tornado.web.asynchronous
 	def post(self):
 		red = redis.from_url(redis_url)
-		email = self.get_argument("access_token")
+		email = self.get_email_from_token(self.get_argument("access_token"))
 		print email
 		red.set(email + "-questions", self.get_argument("questions"))
 		print self.get_argument("questions")
